@@ -1,0 +1,96 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-paper: #f6f3ec;
+  --color-card: #fffdf8;
+  --color-ink: #23271f;
+  --color-muted: #6b6a5f;
+  --color-line: #d9d3c4;
+  --color-moss: #2f4a3a;
+  --color-moss-light: #e3ebe2;
+  --color-amber: #b0731e;
+  --color-amber-light: #f6ead3;
+  --color-rust: #a3432b;
+  --color-male: #dfe8f1;
+  --color-male-line: #8aa4bf;
+  --color-female: #f3e3e3;
+  --color-female-line: #c39595;
+  --color-neutral: #ece9e1;
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  --font-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: contain;
+}
+
+/* große Touch-Ziele */
+@utility btn {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-[15px] font-medium transition active:scale-[0.98] disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-moss text-white;
+}
+@utility btn-ghost {
+  @apply btn border border-line bg-card text-ink;
+}
+@utility btn-danger {
+  @apply btn border border-rust/40 bg-card text-rust;
+}
+@utility field {
+  @apply min-h-11 w-full rounded-xl border border-line bg-card px-3 text-[16px] outline-none focus:border-moss;
+}
+@utility label {
+  @apply mb-1 block text-xs font-semibold tracking-wide text-muted uppercase;
+}
+@utility card {
+  @apply rounded-2xl border border-line bg-card;
+}
+@utility chip {
+  @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium;
+}
+textarea {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Druckansicht */
+@media screen {
+  .print-pages {
+    zoom: var(--preview, 1);
+  }
+}
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  html,
+  body,
+  #root,
+  .print-root {
+    height: auto !important;
+    background: #fff !important;
+  }
+  .print-pages {
+    padding: 0 !important;
+  }
+  .print-page {
+    box-shadow: none !important;
+    margin: 0 !important;
+    break-after: page;
+    page-break-after: always;
+  }
+  .print-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+}

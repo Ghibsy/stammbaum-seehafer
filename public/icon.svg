@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#2f4a3a"/>
+  <!-- Wurzelwerk und Krone aus verbundenen Knoten: eigenes Zeichen für „Stammbaum Seehafer“ -->
+  <g fill="none" stroke="#f6f3ec" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 420 V250"/>
+    <path d="M256 300 C 210 270, 170 250, 150 200"/>
+    <path d="M256 300 C 302 270, 342 250, 362 200"/>
+    <path d="M256 250 V150"/>
+    <path d="M180 430 C 210 420, 236 420, 256 420 C 276 420, 302 420, 332 430"/>
+  </g>
+  <g fill="#e2c48d">
+    <circle cx="150" cy="186" r="38"/>
+    <circle cx="362" cy="186" r="38"/>
+    <circle cx="256" cy="128" r="44"/>
+  </g>
+  <!-- Wellenlinie: Hafer am See -->
+  <path d="M120 470 q 34 -18 68 0 t 68 0 t 68 0 t 68 0" fill="none" stroke="#9fb7a6" stroke-width="12" stroke-linecap="round"/>
+</svg>

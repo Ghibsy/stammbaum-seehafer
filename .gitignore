@@ -1,0 +1,10 @@
+node_modules
+dist
+dev-dist
+.env.local
+*.local
+# Niemals Familiendaten ins Repository
+*.xlsx
+stammbaum*.json
+private/
+tests/local/data/
