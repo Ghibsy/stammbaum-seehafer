@@ -3,6 +3,7 @@ import { treatAsLiving } from '../model/queries';
 import type { TreeDoc } from '../model/types';
 import { computeFan, type Fan } from './fan';
 import { computeLayout, setTileMetrics, type Layout } from './layout';
+import { stammLayout } from './stammLayout';
 import { pedigreeLayout } from './pedigree';
 import { stammVisible, type Marks } from './stamm';
 
@@ -26,6 +27,8 @@ export interface TileContent {
   occupation: boolean;
   id: boolean;
   status: boolean;
+  /** vollständige Lebensdaten (Geburtstag, Todestag) statt nur der Jahre */
+  fullDates: boolean;
 }
 
 export interface ViewSettings {
@@ -69,7 +72,7 @@ const DEFAULTS: ViewSettings = {
   genDown: 3,
   showPartners: true,
   living: 'zeigen',
-  tile: { photo: true, callName: true, birthName: true, dates: true, age: true, birthPlace: true, deathPlace: false, residence: true, occupation: false, id: true, status: true },
+  tile: { photo: true, callName: true, birthName: true, dates: true, age: true, birthPlace: true, deathPlace: false, residence: true, occupation: false, id: true, status: true, fullDates: false },
   size: 'standard',
   spacing: 'standard',
   colors: 'geschlecht',
@@ -131,6 +134,8 @@ export function useView(): ViewSettings {
 export interface ExpandState {
   up: string[];
   down: string[];
+  /** an diesen Knoten bewusst zugeklappt */
+  collapsed?: string[];
 }
 const EKEY = 'stammbaum.expand';
 let expand: ExpandState = (() => {
@@ -151,14 +156,23 @@ function setExpand(e: ExpandState) {
 export function toggleUp(id: string) {
   setExpand({ ...expand, up: expand.up.includes(id) ? expand.up.filter((x) => x !== id) : [...expand.up, id] });
 }
-export function toggleDown(id: string) {
-  setExpand({ ...expand, down: expand.down.includes(id) ? expand.down.filter((x) => x !== id) : [...expand.down, id] });
+/** ▼ an einem Knoten: offen → zuklappen (auch Teile des Grundbaums), zu → aufklappen */
+export function toggleDown(id: string, open: boolean, partners: string[] = []) {
+  // gilt für das ganze Paar, sonst hielte der Partner den Zweig offen bzw. zu
+  const pair = [id, ...partners];
+  const collapsed = expand.collapsed ?? [];
+  if (open) setExpand({ ...expand, down: expand.down.filter((x) => !pair.includes(x)), collapsed: [...new Set([...collapsed, ...pair])] });
+  else setExpand({ ...expand, down: [...new Set([...expand.down, id])], collapsed: collapsed.filter((x) => !pair.includes(x)) });
 }
 export function openBranches(up: string[], down: string[]) {
-  setExpand({ up: [...new Set([...expand.up, ...up])], down: [...new Set([...expand.down, ...down])] });
+  setExpand({
+    up: [...new Set([...expand.up, ...up])],
+    down: [...new Set([...expand.down, ...down])],
+    collapsed: (expand.collapsed ?? []).filter((x) => !down.includes(x)),
+  });
 }
 export function collapseAll() {
-  setExpand({ up: [], down: [] });
+  setExpand({ up: [], down: [], collapsed: [] });
 }
 export function useExpand(): ExpandState {
   return useSyncExternalStore(
@@ -193,8 +207,8 @@ export function buildView(doc: TreeDoc, v: ViewSettings, focusId: string | undef
     return { kind: 'layout', layout: pedigreeLayout(d, { mode: v.mode, focusId: focus, genUp: v.genUp, genDown: v.genDown, showPartners: v.showPartners }), anon };
   }
   if (v.mode === 'stamm') {
-    const s = stammVisible(d, v.rootId, new Set(ex.up), new Set(ex.down));
-    return { kind: 'layout', layout: computeLayout(d, { onlyIds: s.visible }), anon, marks: s.marks, hidden: s.hidden, rootId: s.rootId };
+    const s = stammVisible(d, v.rootId, new Set(ex.up), new Set(ex.down), new Set(ex.collapsed ?? []));
+    return { kind: 'layout', layout: stammLayout(d, s.rootId ?? v.rootId, s.visible), anon, marks: s.marks, hidden: s.hidden, rootId: s.rootId };
   }
   return { kind: 'layout', layout: computeLayout(d, { nearOf: onlyNear ? focusId : undefined, radius: 2 }), anon };
 }

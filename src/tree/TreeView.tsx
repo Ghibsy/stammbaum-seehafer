@@ -126,7 +126,13 @@ export function TreeView({ focusId }: { focusId?: string }) {
                   up={marks?.up.get(n.id)}
                   down={marks?.down.get(n.id)}
                   onToggleUp={() => toggleUp(n.id)}
-                  onToggleDown={() => toggleDown(n.id)}
+                  onToggleDown={() =>
+                    toggleDown(
+                      n.id,
+                      !!marks?.down.get(n.id)?.open,
+                      layout.partnerships.flatMap((p) => (p.p1 === n.id ? [p.p2] : p.p2 === n.id ? [p.p1] : [])),
+                    )
+                  }
                   onAdd={n.person.kind === 'platzhalter' || built.anon.has(n.id) ? undefined : () => setAddFor(n.id)}
                   onOpen={() => go('person', n.id)}
                 />
@@ -311,6 +317,7 @@ const TILE_FIELDS: [keyof TileContent, string][] = [
   ['callName', 'Rufname statt aller Vornamen'],
   ['birthName', 'Geburtsname (geb. …)'],
   ['dates', 'Lebensdaten'],
+  ['fullDates', 'Geburtstag/Todestag vollständig (statt nur Jahr)'],
   ['age', 'Alter'],
   ['birthPlace', 'Geburtsort'],
   ['deathPlace', 'Sterbeort'],

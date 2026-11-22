@@ -1,5 +1,5 @@
 import { useEffect, useState, type MouseEvent } from 'react';
-import { ageAt, formatAge, shortYear } from '../model/dates';
+import { ageAt, formatAge, formatGenDate, shortYear } from '../model/dates';
 import { birthDate, deathDate, displayName, eventOf, isActive, isDeceased, nameOf, shortName } from '../model/queries';
 import type { Person } from '../model/types';
 import { mediaUrl } from '../media/media';
@@ -8,7 +8,7 @@ import { TILE_H, TILE_W, type LNode } from './layout';
 import type { Mark } from './stamm';
 import type { ColorScheme, TileContent } from './viewSettings';
 
-export const DEFAULT_TILE: TileContent = { photo: false, callName: true, birthName: false, dates: true, age: false, birthPlace: false, deathPlace: false, residence: false, occupation: false, id: true, status: false };
+export const DEFAULT_TILE: TileContent = { photo: false, callName: true, birthName: false, dates: true, age: false, birthPlace: false, deathPlace: false, residence: false, occupation: false, id: true, status: false, fullDates: false };
 
 function palette(p: Person, colors: ColorScheme) {
   if (p.kind !== 'benannt') return { fill: '#f6f3ec', line: '#b8b3a6', stripe: undefined as string | undefined };
@@ -50,13 +50,18 @@ export function tileLines(p: Person, cfg: TileContent, anon: boolean): { name: s
     const q = (s: string, u: boolean) => (u && s && !s.endsWith('?') ? `${s}?` : s);
     const by = q(shortYear(b), unsureB);
     const dy = q(shortYear(d), unsureD);
-    let s = [by && `*${by}`, dead ? `†${dy || '?'}` : ''].filter(Boolean).join('  ');
-    if (cfg.age && b) {
-      const a = dead ? (d ? ageAt(b, d) : undefined) : ageAt(b);
-      const t = formatAge(a);
-      if (t) s += `  (${t})`;
+    const a = cfg.age && b ? formatAge(dead ? (d ? ageAt(b, d) : undefined) : ageAt(b)) : '';
+    if (cfg.fullDates) {
+      // Geburtstag und Todestag ausgeschrieben, je eine Zeile
+      const bf = q(formatGenDate(b), unsureB);
+      const df = q(formatGenDate(d), unsureD);
+      if (bf) lines.push(`* ${bf}${a && !dead ? `  (${a})` : ''}`);
+      if (dead) lines.push(`† ${df || '?'}${a ? `  (${a})` : ''}`);
+    } else {
+      let s = [by && `*${by}`, dead ? `†${dy || '?'}` : ''].filter(Boolean).join('  ');
+      if (a) s += `  (${a})`;
+      if (s) lines.push(s);
     }
-    if (s) lines.push(s);
   }
   const place = (t: 'geburt' | 'tod') => eventOf(p, t)?.place;
   if (cfg.birthPlace && place('geburt')) lines.push(`* ${place('geburt')}`);
@@ -177,9 +182,11 @@ export function Tile({ n, focus, onOpen, anon = false, cfg = DEFAULT_TILE, color
       {up && onToggleUp && <Pill x={w / 2} y={-11} label={up.open ? '− ▲' : `▲ ${up.hidden}`} title={up.open ? 'Vorfahren zuklappen' : `${up.hidden} Vorfahren aufklappen`} onClick={stop(onToggleUp)} open={up.open} />}
       {down && onToggleDown && <Pill x={w / 2} y={h + 11} label={down.open ? '− ▼' : `▼ ${down.hidden}`} title={down.open ? 'Nachfahren zuklappen' : `${down.hidden} Nachfahren aufklappen`} onClick={stop(onToggleDown)} open={down.open} />}
       {onAdd && (
-        <g onClick={stop(onAdd)} role="button" aria-label={`Person zu ${name} hinzufügen`}>
-          <circle cx={w} cy={h / 2} r={13} fill="#2f4a3a" stroke="#fffdf8" strokeWidth={2} />
-          <text x={w} y={h / 2 + 5} textAnchor="middle" fontSize={17} fontWeight={700} fill="#fff">
+        // dezentes Plus unten rechts neben der ID; die unsichtbare Fläche erleichtert das Tippen
+        <g onClick={stop(onAdd)} role="button" aria-label={`Person zu ${name} hinzufügen`} transform={`translate(${w - (cfg.id ? 14 + p.id.length * 5.4 : 4) - 8},${h - 10})`}>
+          <rect x={-14} y={-14} width={28} height={28} fill="transparent" />
+          <circle r={7} fill="#eef2ec" stroke="#8aa08f" strokeWidth={0.8} />
+          <text y={3.6} textAnchor="middle" fontSize={11} fontWeight={600} fill="#2f4a3a">
             +
           </text>
           <title>Neue Person mit Beziehung zu {name}</title>

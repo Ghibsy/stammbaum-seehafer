@@ -27,7 +27,7 @@ export interface StammResult {
   hidden: string[];
 }
 
-export function stammVisible(doc: TreeDoc, rootId: string, up: Set<string>, down: Set<string>): StammResult {
+export function stammVisible(doc: TreeDoc, rootId: string, up: Set<string>, down: Set<string>, collapsed: Set<string> = new Set()): StammResult {
   const idx = new Index(doc);
   const root = idx.person(rootId) ? rootId : (idx.person('P001') ? 'P001' : [...idx.byId.keys()][0]);
   const vis = new Set<string>();
@@ -39,6 +39,7 @@ export function stammVisible(doc: TreeDoc, rootId: string, up: Set<string>, down
     while (q.length) {
       const x = q.shift()!;
       if (!vis.has(x)) vis.add(x);
+      if (collapsed.has(x)) continue; // an diesem Knoten zugeklappt
       for (const c of idx.children(x)) if (!vis.has(c)) q.push(c);
     }
   };
@@ -54,7 +55,8 @@ export function stammVisible(doc: TreeDoc, rootId: string, up: Set<string>, down
     changed = false;
     const before = vis.size;
     for (const x of up) if (vis.has(x)) for (const p of idx.parents(x)) vis.add(p);
-    for (const x of down) if (vis.has(x)) for (const c of idx.children(x)) vis.add(c);
+    // aufgeklappt: alle Nachfahren (so viele, wie die Zahl am ▼ angekündigt hat), außer zugeklappten Knoten
+    for (const x of down) if (vis.has(x) && !collapsed.has(x)) for (const c of idx.children(x)) if (!vis.has(c)) addDescendants(c);
     // Partner neu hinzugekommener Personen (z. B. das Elternpaar) mit anzeigen
     for (const x of [...vis]) {
       for (const p of idx.partners(x)) {
@@ -96,7 +98,8 @@ export function stammVisible(doc: TreeDoc, rootId: string, up: Set<string>, down
     else if (up.has(x) && idx.parents(x).length) marks.up.set(x, { hidden: 0, open: true });
     const hd = countDescendants(x);
     if (hd > 0) marks.down.set(x, { hidden: hd, open: false });
-    else if (down.has(x) && idx.children(x).length) marks.down.set(x, { hidden: 0, open: true });
+    // an jedem Knoten mit sichtbaren Kindern lässt sich der Zweig zuklappen
+    else if (idx.children(x).some((c) => vis.has(c))) marks.down.set(x, { hidden: 0, open: true });
   }
   const hidden = [...idx.byId.keys()].filter((id) => !vis.has(id));
   return { rootId: root, visible: vis, marks, hidden };

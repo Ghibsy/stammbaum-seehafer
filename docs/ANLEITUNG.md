@@ -102,13 +102,15 @@ Die Ausgangsperson wählst du in der Ansicht oder über „Im Baum zeigen“ bei
 - Gezeigt werden die Nachfahren der **Stammeltern** (voreinstellbar unter ☰ Ansicht) mit ihren Partnern, streng nach Generationen.
 - **▲ Zahl** oben an einer Kachel: Hier gibt es verborgene Vorfahren, zum Beispiel die Eltern einer angeheirateten Person. Antippen klappt die Eltern auf, **− ▲** klappt wieder zu.
 - **▼ Zahl** unten: verborgene Kinder bzw. Nachfahren, etwa Geschwister einer angeheirateten Person.
+- **− ▼** an jeder Person mit sichtbaren Kindern klappt den Zweig darunter zu (auch im Grundbaum), **▼ Zahl** öffnet ihn wieder samt allen Nachfahren. Das gilt jeweils für das ganze Paar.
+- Aufgeklappte Seitenzweige werden **neben** die angeheiratete Person gesetzt; benachbarte Zweige rücken dafür zur Seite, sodass sich weder Kacheln noch Linien überlagern. Ein Zweig mit eingeblendeten Schwiegereltern rückt dabei an den Rand seiner Geschwister.
 - Trifft ein aufgeklappter Zweig auf jemanden, der schon im Bild ist, wird die Person nicht doppelt gezeigt. Die Linie führt zur vorhandenen Kachel.
 - **Gepunktete Linien** stehen für unsichere oder abgeleitete Verbindungen (Platzhalter-Eltern, „abgeleitet“, „als Cousin angegeben“).
 - Unten zeigt „… weitere“ alle Personen, die gerade nicht im Bild sind, mit Sprung zur Person oder in die Sanduhr. „alles zuklappen“ führt zurück zur Ausgangsansicht.
 - Andere Stammeltern wählst du unter **☰ Ansicht → Stammeltern**. Die frühere Gesamtansicht heißt jetzt „Alle Personen“.
 
 ## Plus an jeder Person
-Der runde **+**-Knopf rechts an jeder Kachel öffnet „Neue Person zu …“. Zuerst wählst du die Beziehung:
+Das kleine **+** unten rechts neben der ID jeder Kachel öffnet „Neue Person zu …“. Zuerst wählst du die Beziehung:
 - **Vater/Mutter:** wird Elternteil. Ist schon ein Elternteil da, wird ein Paar vorgeschlagen (als „abgeleitet“ markiert).
 - **Bruder/Schwester:** bekommt dieselben Eltern; für Halbgeschwister nur einen Haken setzen. Sind keine Eltern erfasst, legt die App wahlweise Platzhalter-Eltern an.
 - **Sohn/Tochter:** Kind der Person und, falls gewählt, ihres Partners.
@@ -117,4 +119,4 @@ Der runde **+**-Knopf rechts an jeder Kachel öffnet „Neue Person zu …“. Z
 Nachname und Geschlecht sind vorbelegt, zum Beispiel beim Bruder einer verheirateten Frau deren Geburtsname. Nach dem Speichern klappt die App den passenden Zweig auf, damit die neue Person sofort zu sehen ist.
 
 ## Kacheln einstellen
-**☰ Ansicht → Kacheln:** Foto, Rufname oder alle Vornamen, Geburtsname, Lebensdaten, Alter, Geburts- und Sterbeort, aktueller Wohnort, Beruf, ID und ein Häkchen bei dokumentarisch belegten Daten. Dazu Größe (kompakt, standard, groß), Abstände und Farben (nach Geschlecht, dezent, neutral). Die Einstellungen gelten pro Gerät und auch für den Druck.
+**☰ Ansicht → Kacheln:** Foto, Rufname oder alle Vornamen, Geburtsname, Lebensdaten (nur Jahre oder vollständig mit Geburtstag/Todestag), Alter, Geburts- und Sterbeort, aktueller Wohnort, Beruf, ID und ein Häkchen bei dokumentarisch belegten Daten. Dazu Größe (kompakt, standard, groß), Abstände und Farben (nach Geschlecht, dezent, neutral). Die Einstellungen gelten pro Gerät und auch für den Druck.
