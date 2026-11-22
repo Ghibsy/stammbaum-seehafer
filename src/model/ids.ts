@@ -1,9 +1,9 @@
 import type { TreeDoc } from './types';
 
 /** Fachliche IDs (P001, U001, Q01, F01, H01, M001, O01) bleiben stabil; neue IDs zählen hoch, Lücken werden nie neu vergeben. */
-export type IdPrefix = 'P' | 'U' | 'Q' | 'F' | 'H' | 'M' | 'O';
+export type IdPrefix = 'P' | 'U' | 'Q' | 'F' | 'H' | 'M' | 'O' | 'L';
 
-const WIDTH: Record<IdPrefix, number> = { P: 3, U: 3, Q: 2, F: 2, H: 2, M: 3, O: 2 };
+const WIDTH: Record<IdPrefix, number> = { P: 3, U: 3, Q: 2, F: 2, H: 2, M: 3, O: 2, L: 3 };
 
 function existing(doc: TreeDoc, prefix: IdPrefix): string[] {
   switch (prefix) {
@@ -20,6 +20,8 @@ function existing(doc: TreeDoc, prefix: IdPrefix): string[] {
       return doc.media.map((m) => m.id);
     case 'O':
       return doc.questions.map((q) => q.id);
+    case 'L':
+      return (doc.places ?? []).map((p) => p.id);
   }
 }
 

@@ -94,3 +94,12 @@ textarea {
     page-break-after: auto;
   }
 }
+
+/* Formatierter Text (Nachruf, Chronik) */
+.richtext h2 { font-family: var(--font-serif, Georgia, serif); font-size: 1.25rem; margin: 0.8em 0 0.3em; }
+.richtext h3 { font-weight: 600; font-size: 1.05rem; margin: 0.7em 0 0.2em; }
+.richtext p { margin: 0 0 0.6em; line-height: 1.55; }
+.richtext ul { list-style: disc; padding-left: 1.3em; margin: 0 0 0.6em; }
+.richtext ol { list-style: decimal; padding-left: 1.3em; margin: 0 0 0.6em; }
+.richtext blockquote { border-left: 3px solid #b8c7b8; padding-left: 0.8em; color: #4b5a4f; font-style: italic; margin: 0 0 0.6em; }
+.richtext img { display: block; max-width: 100%; margin: 0.5em 0; border-radius: 12px; }

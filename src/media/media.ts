@@ -22,6 +22,18 @@ export async function storeBlob(id: string, blob: Blob, file: string) {
 
 const urlCache = new Map<string, string>();
 
+/** Rohdaten eines Mediums (für Export als GEDZIP) – aus dem Gerät oder OneDrive */
+export async function mediaBlob(id: string, file?: string): Promise<Blob | undefined> {
+  const row = await db.blobs.get(id);
+  if (row) return row.blob;
+  if (!file || !navigator.onLine) return undefined;
+  try {
+    return (await downloadBlob(file)) ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /** Objekt-URL für ein Medium: aus dem Gerätespeicher oder (falls angemeldet) aus OneDrive nachladen */
 export async function mediaUrl(id: string, file?: string): Promise<string | undefined> {
   if (urlCache.has(id)) return urlCache.get(id);

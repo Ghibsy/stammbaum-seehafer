@@ -7,15 +7,16 @@ import { VitePWA } from 'vite-plugin-pwa';
 const base = process.env.VITE_BASE ?? '/stammbaum-seehafer/';
 
 // Strenge Content-Security-Policy nur im Produktions-Build (Dev-Server braucht Inline-Skripte für HMR).
-// Netzwerkverbindungen ausschließlich zu Microsoft-Anmeldung, Graph und OneDrive-Downloadservern.
+// Netzwerkverbindungen ausschließlich zu Microsoft-Anmeldung, Graph, OneDrive-Downloadservern und – nur auf Knopfdruck
+// bzw. beim Öffnen der Karte – OpenStreetMap (Kartenkacheln, Ortssuche mit reinem Ortsnamen).
 const CSP = [
   "default-src 'self'",
   "script-src 'self'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' blob: data:",
+  "img-src 'self' blob: data: https://tile.openstreetmap.org",
   "media-src 'self' blob:",
   "font-src 'self'",
-  "connect-src 'self' https://graph.microsoft.com https://login.microsoftonline.com https://login.live.com https://*.1drv.com https://*.microsoftpersonalcontent.com https://*.livefilestore.com https://*.storage.live.com",
+  "connect-src 'self' https://nominatim.openstreetmap.org https://graph.microsoft.com https://login.microsoftonline.com https://login.live.com https://*.1drv.com https://*.microsoftpersonalcontent.com https://*.livefilestore.com https://*.storage.live.com",
   'frame-src https://login.microsoftonline.com https://login.live.com',
   "object-src 'none'",
   "base-uri 'self'",

@@ -105,7 +105,7 @@ export interface PersonEvent {
   date?: GenDate;
   dateTo?: GenDate;
   place?: string;
-  /** eigener Status für den Ort, wenn er unsicherer ist als das Datum (z. B. „vermutlich Burgdorf“) */
+  /** eigener Status für den Ort, wenn er unsicherer ist als das Datum (z. B. „vermutlich Altdorf“) */
   placeStatus?: Status;
   address?: string;
   status: Status;
@@ -365,6 +365,37 @@ export interface MergeSnapshot {
   assertions: Assertion[];
 }
 
+/** Ort mit historischen/alternativen Namen (z. B. Marienburg / Malbork) und optional Koordinaten */
+export interface Place {
+  id: string;
+  /** Hauptname, wie er in den Angaben verwendet wird */
+  name: string;
+  /** weitere Schreibweisen und historische Namen */
+  altNames: string[];
+  lat?: number;
+  lon?: number;
+  /** Herkunft der Koordinaten */
+  coordSource?: 'OSM' | 'manuell';
+  /** Bezeichnung des gewählten OSM-Treffers zur Kontrolle */
+  osmLabel?: string;
+  note?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Kapitel der Familienchronik (formatierter Text, siehe ui/sanitize.ts) */
+export interface ChronicleEntry {
+  id: string;
+  title: string;
+  /** Zeitraum als Freitext, z. B. „1945–1950“ */
+  period?: string;
+  html: string;
+  personIds: string[];
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface TreeDoc {
   schemaVersion: number;
   meta: {
@@ -385,6 +416,8 @@ export interface TreeDoc {
   questions: OpenQuestion[];
   duplicates: DuplicatePair[];
   evidence: Evidence[];
+  places: Place[];
+  chronicle: ChronicleEntry[];
 }
 
 export function emptyDoc(name = 'Stammbaum Seehafer'): TreeDoc {
@@ -403,5 +436,7 @@ export function emptyDoc(name = 'Stammbaum Seehafer'): TreeDoc {
     questions: [],
     duplicates: [],
     evidence: [],
+    places: [],
+    chronicle: [],
   };
 }

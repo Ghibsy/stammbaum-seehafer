@@ -13,6 +13,8 @@ import { DataTab, LifeTab } from './DataTab';
 import { FamilyTab } from './FamilyTab';
 import { MediaTab } from './MediaTab';
 import { usePerson } from './usePerson';
+import { RichTextEditor } from '../ui/RichText';
+import { searchLinks } from '../model/searchLinks';
 
 const TABS = [
   ['person', 'Person'],
@@ -298,13 +300,45 @@ function MergeDialog({ id, onClose }: { id: string; onClose: () => void }) {
 }
 
 function ObituaryTab({ id }: { id: string }) {
-  const { person: p, edit } = usePerson(id);
+  const { person: p, doc, edit } = usePerson(id);
   if (!p) return null;
   if (!isDeceased(p)) return <p className="text-sm text-muted">Der Nachruf steht bei verstorbenen Personen zur Verfügung. (Lebensstatus im Reiter „Person“ oder Sterbeangabe im Reiter „Daten“.)</p>;
+  const own = doc.media.filter((m) => m.targets.some((t) => t.id === id)).map((m) => m.id);
   return (
     <>
-      <p className="mb-2 text-sm text-muted">Freitext. Formatierung mit Überschriften und Bildern folgt in Phase 3.</p>
-      <TextField multiline value={p.obituary} onCommit={(v) => edit('Nachruf', (q) => (q.obituary = v || undefined))} placeholder="Was hat diesen Menschen ausgemacht?" />
+      <p className="mb-2 text-sm text-muted">Mit Überschriften, Listen, Zitaten und Fotos dieser Person. Gespeichert wird beim Verlassen des Feldes.</p>
+      <RichTextEditor value={p.obituary} mediaIds={own} onCommit={(v) => edit('Nachruf', (q) => (q.obituary = v || undefined))} placeholder="Was hat diesen Menschen ausgemacht?" />
+      <SearchLinks id={id} />
     </>
+  );
+}
+
+/** Externe Suche in Online-Archiven (nur Verstorbene, nur auf Klick) */
+function SearchLinks({ id }: { id: string }) {
+  const { person: p } = usePerson(id);
+  if (!p) return null;
+  const links = searchLinks(p);
+  if (!links.length) return null;
+  const surnames = [...new Set(links.map((l) => l.surname))];
+  return (
+    <Section title="In Online-Archiven suchen">
+      <div className="card grid gap-2 p-3">
+        {surnames.map((s) => (
+          <div key={s}>
+            {surnames.length > 1 && <div className="mb-1 text-xs text-muted">als „{s}“</div>}
+            <div className="flex flex-wrap gap-2">
+              {links
+                .filter((l) => l.surname === s)
+                .map((l) => (
+                  <a key={l.site} className="btn-ghost min-h-10 px-3 text-sm" href={l.url} target="_blank" rel="noopener noreferrer">
+                    {l.site} ↗
+                  </a>
+                ))}
+            </div>
+          </div>
+        ))}
+        <p className="text-xs text-muted">Öffnet die Suche der jeweiligen Seite in einem neuen Tab. Übergeben werden nur Vorname, Nachname und Lebensjahre.</p>
+      </div>
+    </Section>
   );
 }

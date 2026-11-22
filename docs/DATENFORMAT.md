@@ -24,6 +24,15 @@ Die Datei liegt in OneDrive unter `Apps/Stammbaum Seehafer/stammbaum.json`. Foto
 | `notes` | Familiennotiz (Überlieferung) mit `open` und `history` |
 | `questions` | offene Prüfpunkte mit verknüpften Personen |
 | `duplicates` | `moeglich` / `verschieden` / `zusammengefuehrt` (mit `snapshot` für Rückgängig) |
+| `evidence` | Belegaussagen (B001 …): welche Quelle was für welche Personen belegt |
+| `places` | gepflegter Ort `L001`: `name`, `altNames[]` (historische Namen/Schreibweisen), `lat`/`lon`, `coordSource` (`OSM` / `manuell`), `osmLabel`. Die Angaben behalten ihren Ortstext; die Zuordnung läuft über die Namen. |
+| `chronicle` | Kapitel der Familienchronik: `title`, `period`, `html`, `personIds[]`, `order` |
+
+`obituary` und `chronicle[].html` sind eingeschränktes HTML (Absatz, h2/h3, fett, kursiv, Listen, Zitat, `<img data-media="M001">`); alles andere wird beim Speichern und Anzeigen entfernt (`src/ui/sanitize.ts`). `places` und `chronicle` sind seit Phase 3 dabei und werden in älteren Dateien automatisch als leere Listen ergänzt – die Format-Version bleibt 1.
+
+### Belegstatus
+
+Werte: `belegt`, `familienangabe`, `abgeleitet`, `unsicher`, `widerlegt`. Im GEDCOM-Export steht er im eigenen Feld `_STAT` und als Qualität `QUAY` (3 = belegt, 1 = Familienangabe/abgeleitet, 0 = unsicher) an Quellenzitaten.
 
 ## Datumsangaben (`GenDate`)
 

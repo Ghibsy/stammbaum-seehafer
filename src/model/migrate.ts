@@ -21,7 +21,7 @@ export function migrate(raw: unknown): TreeDoc {
     v = d.schemaVersion as number;
   }
   // fehlende Sammlungen ergänzen (robust gegen ältere Teilstände)
-  for (const k of ['persons', 'parentChild', 'partnerships', 'assertions', 'sources', 'media', 'research', 'notes', 'questions', 'duplicates', 'evidence']) {
+  for (const k of ['persons', 'parentChild', 'partnerships', 'assertions', 'sources', 'media', 'research', 'notes', 'questions', 'duplicates', 'evidence', 'places', 'chronicle']) {
     if (!Array.isArray(d[k])) d[k] = [];
   }
   return d as unknown as TreeDoc;

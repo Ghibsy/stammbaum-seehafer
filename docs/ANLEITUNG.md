@@ -120,3 +120,31 @@ Nachname und Geschlecht sind vorbelegt, zum Beispiel beim Bruder einer verheirat
 
 ## Kacheln einstellen
 **☰ Ansicht → Kacheln:** Foto, Rufname oder alle Vornamen, Geburtsname, Lebensdaten (nur Jahre oder vollständig mit Geburtstag/Todestag), Alter, Geburts- und Sterbeort, aktueller Wohnort, Beruf, ID und ein Häkchen bei dokumentarisch belegten Daten. Dazu Größe (kompakt, standard, groß), Abstände und Farben (nach Geschlecht, dezent, neutral). Die Einstellungen gelten pro Gerät und auch für den Druck.
+
+# Phase 3: Orte & Karte, Statistik, Chronik, GEDCOM, Leseansicht
+
+Alles Neue findest du unter **Mehr → Auswertungen** bzw. **Mehr → Export/Import**.
+
+## Orte & Karte
+- Die **Ortsliste** entsteht automatisch aus den Orten aller Angaben. Zusätze wie „vermutlich“, „Raum“, „Friedhof“ und Straßenadressen fallen dabei weg; die Angabe selbst bleibt unverändert.
+- „Marienburg / Malbork“ wird als ein Ort mit zwei Namen erkannt. Steht „vermutlich“ davor, heißt der Schrägstrich „oder“ – dann zählt nur der erste Ort.
+- Im Ortsblatt kannst du **historische Namen** ergänzen, den Hauptnamen wechseln und zwei Einträge **zusammenlegen** (z. B. „Breslau“ und „Wrocław“).
+- **Auf Karte suchen** fragt OpenStreetMap nach Koordinaten. Gesendet wird nur der Ortsname, nie Personen oder Adressen, und nur wenn du tippst. Du wählst den passenden Treffer selbst aus; alternativ Koordinaten von Hand eintragen.
+- Die **Karte** zeigt alle Orte mit Koordinaten, filterbar nach Geburt, Tod, Wohnort und Heirat. Das Antippen eines Markers listet die Personen. Kartenbilder kommen von OpenStreetMap (dabei wird nur der Kartenausschnitt abgerufen).
+
+## Statistik
+Personen, Generationen, Belegstatus aller Angaben, Vollständigkeit (Geburtsjahr, Geburtsort, Todesjahr, Quelle, Foto), Geburten je Jahrzehnt, Lebensalter, häufigste Vor- und Familiennamen sowie Geburtsorte. Lebensalter zählt nur, wenn es aus den Daten eindeutig hervorgeht.
+
+## Nachruf und Familienchronik
+- Der **Nachruf** (Reiter „Nachruf“ bei Verstorbenen) und die **Familienchronik** (eigene Kapitel mit Zeitraum und beteiligten Personen) haben jetzt Formatierung: Überschriften, fett, kursiv, Listen, Zitat und Fotos aus den vorhandenen Medien.
+- Unter dem Nachruf stehen **Suchlinks** zu FamilySearch, MyHeritage, Ancestry, WikiTree und Find a Grave – mit Geburts- und ggf. Ehenamen. Sie erscheinen nur bei Verstorbenen und öffnen die Suche erst beim Antippen.
+
+## GEDCOM
+- **Export** (Mehr → Export): GEDCOM 5.5.1 (lesen fast alle Programme), GEDCOM 7 oder GEDZIP mit Fotos. Lebende lassen sich anonymisieren. Der Belegstatus geht im Feld `_STAT` mit; Recherche, Notizen und Historie bleiben draußen.
+- **Import** (Mehr → Import → GEDCOM): Jede Person der Datei wird mit deinem Baum abgeglichen. Zusammenführen schlägt die App nur bei gleichem Namen und passendem Geburtsdatum vor (oder gleicher ID bei einer eigenen Datei). Du entscheidest je Person: neu, zusammenführen, weglassen.
+- Beim Zusammenführen wird **nichts überschrieben**: Fehlendes kommt dazu, Abweichendes wird als zusätzliche Angabe „unsicher/vorläufig“ mit Hinweis gespeichert. Jede übernommene Angabe verweist auf eine neue Quelle „GEDCOM-Datei …“. Rückgängig geht mit ↶.
+
+## Leseansicht für Verwandte
+Mehr → Export → **Leseansicht herunterladen** erzeugt eine einzelne HTML-Datei (Baum, Personen mit Belegstatus, auf Wunsch Chronik, Nachrufe, Fotos, Quellentitel). Sie lässt sich per Mail oder Messenger verschicken und ohne Internet öffnen. Lebende werden anonymisiert oder ganz weggelassen. **Selbst geschriebene Texte** in Chronik und Nachrufen werden nicht automatisch anonymisiert – vor dem Verschicken kurz prüfen.
+
+Ein echter gemeinsamer Zugang für Verwandte ist bewusst nicht eingebaut: Mit dem OneDrive-App-Ordner ginge das nur mit Zugriff auf deinen gesamten OneDrive.

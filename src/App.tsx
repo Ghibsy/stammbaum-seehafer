@@ -11,6 +11,9 @@ import { ChecksView } from './views/ChecksView';
 import { KinshipView } from './views/KinshipView';
 import { PrintView } from './views/PrintView';
 import { TimelineView } from './views/TimelineView';
+import { PlacesView } from './views/PlacesView';
+import { StatsView } from './views/StatsView';
+import { ChronicleView } from './views/ChronicleView';
 
 const NAV = [
   ['baum', 'Baum', '🌳'],
@@ -61,6 +64,9 @@ export function App() {
         {view === 'mehr' && <MoreView sub={a} />}
         {view === 'zeitleiste' && <TimelineView tab={a} />}
         {view === 'pruefen' && <ChecksView />}
+        {view === 'orte' && <PlacesView tab={a} />}
+        {view === 'statistik' && <StatsView />}
+        {view === 'chronik' && <ChronicleView id={a} />}
         {view === 'verwandtschaft' && <KinshipView a={a} b={b} />}
       </main>
       <nav className="grid grid-cols-5 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]">
