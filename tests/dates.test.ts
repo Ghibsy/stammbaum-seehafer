@@ -56,7 +56,7 @@ describe('parseGenDate', () => {
   });
   it('zwischen … und …', () => {
     expect(parseGenDate('zwischen 1920 und 1925')).toMatchObject({ qualifier: 'zwischen', y: 1920, y2: 1925 });
-    expect(parseGenDate('1903-1985')).toMatchObject({ qualifier: 'zwischen', y: 1903, y2: 1985 });
+    expect(parseGenDate('1901-1980')).toMatchObject({ qualifier: 'zwischen', y: 1901, y2: 1980 });
   });
   it('„verstorben; Datum unbekannt“', () => {
     expect(parseGenDate('verstorben; Datum unbekannt')).toMatchObject({ qualifier: 'unbekannt', remark: 'Datum unbekannt' });

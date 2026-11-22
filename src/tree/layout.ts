@@ -11,12 +11,22 @@ import type { Assertion, ParentChild, Partnership, Person, TreeDoc } from '../mo
  *  4. x-Positionen: Eltern über Kindern zentriert, Überlappungen blockweise aufgelöst.
  */
 
-export const TILE_W = 156;
-export const TILE_H = 66;
-const GAP = 22;
-const PARTNER_GAP = 34;
-const LAYER_H = 128;
+/** Kachelmaße – über setTileMetrics einstellbar (Kachelgröße, Abstände). ES-Module geben die aktuellen Werte weiter. */
+export let TILE_W = 156;
+export let TILE_H = 66;
+export let GAP = 22;
+export let PARTNER_GAP = 34;
+export let LAYER_H = 128;
 const COMP_GAP = 90;
+
+export function setTileMetrics(w: number, h: number, spacing: 'eng' | 'standard' | 'weit' = 'standard') {
+  const f = spacing === 'eng' ? 0.65 : spacing === 'weit' ? 1.5 : 1;
+  TILE_W = w;
+  TILE_H = h;
+  GAP = Math.round(22 * f);
+  PARTNER_GAP = Math.round(34 * f);
+  LAYER_H = h + Math.round(62 * f);
+}
 
 export interface LNode {
   id: string;
@@ -48,6 +58,8 @@ export interface LayoutOptions {
   /** nur Personen bis zu `radius` Schritte (Eltern/Kind/Partner/Aussage) von dieser Person */
   nearOf?: string;
   radius?: number;
+  /** nur diese Personen zeigen (Ansicht „Stammbaum“ mit aufgeklappten Zweigen) */
+  onlyIds?: Set<string>;
 }
 
 export function computeLayout(doc: TreeDoc, opt: LayoutOptions = {}): Layout {
@@ -141,6 +153,7 @@ export function computeLayout(doc: TreeDoc, opt: LayoutOptions = {}): Layout {
 
   // ---------- Auswahl ----------
   let visible = persons.map((p) => p.id);
+  if (opt.onlyIds) visible = visible.filter((id) => opt.onlyIds!.has(id));
   if (opt.nearOf && idx.byId.has(opt.nearOf)) {
     const dist = new Map<string, number>([[opt.nearOf, 0]]);
     const q = [opt.nearOf];

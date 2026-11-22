@@ -12,7 +12,7 @@ function buildV2(): XLSX.WorkBook {
   const P = ['Person-ID', 'Name', 'Nachname', 'Vornamen', 'Geburtsname', 'Generation', 'Familienzweig', 'Rufname / Suchvarianten', 'Geburtsdatum', 'Geburt unvollständig', 'Geburtsort / Herkunft', 'Wohnort / Ortsbezug', 'Gestorben am', 'Tod unvollständig', 'Sterbeort', 'Bestattung / Grab', 'Eltern', 'Partner / frühere Ehe', 'Kinder', 'Beziehung zur Familie', 'Angabenstatus', 'Weitere Informationen', 'Quellen-IDs', 'Übermitteltes Profil', 'Bild-IDs', 'Was öffentlich belegt ist'];
   const persons = [
     P,
-    ['P001', 'Max Otto Muster', 'Muster', 'Max Otto', '', 2, 'Kern', '', 27000, '', 'Celle', '', '', '', '', '', '', '', '', 'Sohn von Anna', 'Familienangabe', 'Notiz', 'Q01', '', '', ''],
+    ['P001', 'Max Otto Muster', 'Muster', 'Max Otto', '', 2, 'Kern', '', 27000, '', 'Neustadt', '', '', '', '', '', '', '', '', 'Sohn von Anna', 'Familienangabe', 'Notiz', 'Q01', '', '', ''],
     ['P003', 'Anna Muster', 'Muster', 'Anna', 'Łącka', 3, 'Kern', 'Ania', 7794, '', 'Musterstadt', '', 32915, '', 'Musterstadt', 'Friedhof Musterstadt; 7-A-1/23', '', '', '', 'Mutter von Max', 'Familienangabe; Grabsteinfoto bestätigt', '', 'Q01; Q02', 'https://example.org/anna', 'M001', 'Lebensdaten durch Grabregister'],
     ['U001', 'Unbekannter Sohn von Anna', '', 'Unbekannter Sohn von Anna', '', 2, 'Offen', '', '', '', '', '', '', '', '', '', '', '', '', 'Zweiter Sohn', 'Name offen', '', 'Q01', '', '', ''],
   ];
@@ -37,7 +37,7 @@ function buildV2(): XLSX.WorkBook {
   ];
   const recherche = [
     ['Recherche-ID', 'Stand der Prüfung', 'Einordnung', 'Person / Suchansatz', 'Zeitraum', 'Ort / Bestand', 'Ergebnis', 'Quellen-IDs', 'Einschränkung / Weiterarbeit'],
-    ['F01', 46310, 'Übernommen', 'Willi Muster', '1903-1985', 'Celle', 'Fund', 'Q01', 'Nicht übernommen'],
+    ['F01', 46310, 'Übernommen', 'Willi Muster', '1901-1980', 'Neustadt', 'Fund', 'Q01', 'Nicht übernommen'],
     ['N01', 46346, 'Neu', 'Kirchenbuch', '', 'Burgdorf', 'Bestand', '', ''],
   ];
   const notizen = [

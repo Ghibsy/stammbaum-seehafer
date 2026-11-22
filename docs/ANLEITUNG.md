@@ -95,3 +95,26 @@ Die Ausgangsperson wählst du in der Ansicht oder über „Im Baum zeigen“ bei
 - **Konsistenz prüfen**: Widersprüche wie Tod vor Geburt, Kind älter als Elternteil, unplausibles Alter der Eltern oder Geburt nach dem Tod eines Elternteils. Dazu Beziehungen und Personen ohne Quelle sowie mögliche Dubletten. Ungefähre Daten werden mit ihrem Spielraum geprüft. Ein Paar, das du als „verschiedene Personen“ markierst, wird nicht mehr gemeldet.
 - **Verwandtschaft**: zwei Personen wählen. Die App zeigt die deutsche Bezeichnung (zum Beispiel „Cousine 2. Grades, 1 Generation versetzt“), den geschätzten Anteil gemeinsamer DNA und den Weg über die gemeinsamen Vorfahren. Führt der Weg über Platzhalter-Eltern oder abgeleitete Beziehungen, steht das ausdrücklich dabei. Ohne Blutsverwandtschaft ermittelt sie die Schwägerschaft (Schwiegervater, Schwager …). Erreichbar auch über **Person → Familie → Verwandtschaft ermitteln**.
 - **Lebenslauf** (Reiter der Person) enthält jetzt auch Hochzeit/Scheidung der Eltern, Tod von Partnern und die Geburt von Geschwistern, jeweils mit Alter.
+
+# Phase 2b: Stammbaum zum Aufklappen, Plus an jeder Person, Kacheln einstellen
+
+## Ansicht „Stammbaum“ (neue Startansicht)
+- Gezeigt werden die Nachfahren der **Stammeltern** (voreinstellbar unter ☰ Ansicht) mit ihren Partnern, streng nach Generationen.
+- **▲ Zahl** oben an einer Kachel: Hier gibt es verborgene Vorfahren, zum Beispiel die Eltern einer angeheirateten Person. Antippen klappt die Eltern auf, **− ▲** klappt wieder zu.
+- **▼ Zahl** unten: verborgene Kinder bzw. Nachfahren, etwa Geschwister einer angeheirateten Person.
+- Trifft ein aufgeklappter Zweig auf jemanden, der schon im Bild ist, wird die Person nicht doppelt gezeigt. Die Linie führt zur vorhandenen Kachel.
+- **Gepunktete Linien** stehen für unsichere oder abgeleitete Verbindungen (Platzhalter-Eltern, „abgeleitet“, „als Cousin angegeben“).
+- Unten zeigt „… weitere“ alle Personen, die gerade nicht im Bild sind, mit Sprung zur Person oder in die Sanduhr. „alles zuklappen“ führt zurück zur Ausgangsansicht.
+- Andere Stammeltern wählst du unter **☰ Ansicht → Stammeltern**. Die frühere Gesamtansicht heißt jetzt „Alle Personen“.
+
+## Plus an jeder Person
+Der runde **+**-Knopf rechts an jeder Kachel öffnet „Neue Person zu …“. Zuerst wählst du die Beziehung:
+- **Vater/Mutter:** wird Elternteil. Ist schon ein Elternteil da, wird ein Paar vorgeschlagen (als „abgeleitet“ markiert).
+- **Bruder/Schwester:** bekommt dieselben Eltern; für Halbgeschwister nur einen Haken setzen. Sind keine Eltern erfasst, legt die App wahlweise Platzhalter-Eltern an.
+- **Sohn/Tochter:** Kind der Person und, falls gewählt, ihres Partners.
+- **Partner/in:** mit Status der Partnerschaft.
+
+Nachname und Geschlecht sind vorbelegt, zum Beispiel beim Bruder einer verheirateten Frau deren Geburtsname. Nach dem Speichern klappt die App den passenden Zweig auf, damit die neue Person sofort zu sehen ist.
+
+## Kacheln einstellen
+**☰ Ansicht → Kacheln:** Foto, Rufname oder alle Vornamen, Geburtsname, Lebensdaten, Alter, Geburts- und Sterbeort, aktueller Wohnort, Beruf, ID und ein Häkchen bei dokumentarisch belegten Daten. Dazu Größe (kompakt, standard, groß), Abstände und Farben (nach Geschlecht, dezent, neutral). Die Einstellungen gelten pro Gerät und auch für den Druck.

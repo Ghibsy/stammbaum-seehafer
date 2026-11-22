@@ -1,7 +1,7 @@
 import { sortKey } from '../model/dates';
 import { birthDate, Index, isActive } from '../model/queries';
 import type { ParentChild, Partnership, TreeDoc } from '../model/types';
-import { TILE_H, TILE_W, type LFamily, type Layout, type LNode } from './layout';
+import { GAP, LAYER_H, PARTNER_GAP, TILE_H, TILE_W, type LFamily, type Layout, type LNode } from './layout';
 
 /**
  * Ansichten ab einer Ausgangsperson: Vorfahren (nach oben), Nachfahren (nach unten) und
@@ -9,10 +9,7 @@ import { TILE_H, TILE_W, type LFamily, type Layout, type LNode } from './layout'
  * Linien gleich gezeichnet werden. Jede Person erscheint höchstens einmal (Ahnenschwund).
  */
 
-const GAP = 22;
-const PARTNER_GAP = 34;
-const LAYER_H = 128;
-const SLOT = TILE_W + GAP;
+const slot = () => TILE_W + GAP;
 
 export type PedigreeMode = 'vorfahren' | 'nachfahren' | 'sanduhr';
 
@@ -47,7 +44,7 @@ function placeAncestors(c: Ctx, id: string, depth: number, maxDepth: number, cur
   const parents = depth < maxDepth ? orderedParents(c, id).filter((p) => !placed.has(p)) : [];
   if (!parents.length) {
     const x = cursor.x;
-    cursor.x += SLOT;
+    cursor.x += slot();
     addNode(c, id, x, -depth);
     return x;
   }

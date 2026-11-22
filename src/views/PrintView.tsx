@@ -79,7 +79,7 @@ export function PrintView({ focusId }: { focusId?: string }) {
       <>
         <Edges layout={built.layout} />
         {[...built.layout.nodes.values()].map((n) => (
-          <Tile key={n.id} n={n} focus={false} anon={built.anon.has(n.id)} onOpen={() => {}} />
+          <Tile key={n.id} n={n} focus={false} anon={built.anon.has(n.id)} cfg={v.tile} colors={v.colors} onOpen={() => {}} />
         ))}
       </>
     );

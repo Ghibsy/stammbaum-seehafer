@@ -17,7 +17,7 @@ function sheet(title: string, rows: unknown[][]) {
 export function buildFixture(): XLSX.WorkBook {
   const persons: unknown[][] = [
     P_HEAD,
-    ['P001', '2', 'Kern', 'Muster', 'Max Otto', '', '', 27000, '', 'Celle', 'Musterstadt', '', '', '', '', '', '', '', 'Sohn von Anna; Ehemann von Berta', 'Familienangabe', 'Notiz', 'Q01', ''],
+    ['P001', '2', 'Kern', 'Muster', 'Max Otto', '', '', 27000, '', 'Neustadt', 'Musterstadt', '', '', '', '', '', '', '', 'Sohn von Anna; Ehemann von Berta', 'Familienangabe', 'Notiz', 'Q01', ''],
     ['P002', '2', 'Kern', 'Muster', 'Berta', 'Probe', '', '', '06.06., Jahr unbekannt', 'vermutlich Burgdorf', '', '', '', '', '', '', '', '', 'Ehefrau von Max', 'Familienangabe', '', 'Q01', 'https://example.org/b'],
     ['P003', '3', 'Kern', 'Muster', 'Anna', 'Łącka', 'Ania; Anna Łącka (polnische Suchform)', 7794, '', 'Musterstadt', '', 32915, '', 'Musterstadt', 'Friedhof Musterstadt; A / 1 / 23', '', '', '', 'Mutter von Max', 'Familienangabe; Grabstein bestätigt', '', 'Q01; Q02', ''],
     ['P004', '3', 'Kern', 'Muster', 'Karl', '', '', '', '', 'Ostpreußen (Herkunft, kein bestätigter Geburtsort)', '', '', 'vor 12.03.1971 verstorben', '', '', '', '', '', 'Bruder von Anna', 'Familienangabe', '', 'Q01', ''],
@@ -47,7 +47,7 @@ export function buildFixture(): XLSX.WorkBook {
   ];
   const research: unknown[][] = [
     ['ID', 'Name / Ansatz', 'Zeitraum', 'Ort', 'Fund / nächster Ansatz', 'Quellen-ID', 'Abgrenzung'],
-    ['F01', 'Willi Muster', '1903-1985', 'Celle', 'Fund', 'Q04', 'Nicht übernommen'],
+    ['F01', 'Willi Muster', '1901-1980', 'Neustadt', 'Fund', 'Q04', 'Nicht übernommen'],
     ['F03', 'Akte', '1817', 'Ort', 'Fund', 'Q04', ''],
   ];
   const notes: unknown[][] = [

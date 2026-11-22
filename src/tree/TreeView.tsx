@@ -1,25 +1,50 @@
 import { select } from 'd3-selection';
 import { zoom, zoomIdentity, type ZoomBehavior } from 'd3-zoom';
 import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
-import { shortYear } from '../model/dates';
-import { birthDate, deathDate, displayName, eventOf, isDeceased, shortName } from '../model/queries';
+import { displayName, shortName } from '../model/queries';
 import { search } from '../model/search';
 import type { Status } from '../model/types';
+import { AddRelativeSheet } from '../person/AddRelativeSheet';
 import { useStore } from '../state/store';
 import { Sheet } from '../ui/common';
 import { go } from '../ui/router';
 import { FanG } from './fan';
 import { TILE_H, TILE_W, type Layout, type LNode } from './layout';
-import { buildView, MODE_LABEL, setView, useView, type LivingMode, type ViewMode } from './viewSettings';
+import { Tile } from './Tile';
+import {
+  buildView,
+  collapseAll,
+  MODE_LABEL,
+  setTile,
+  setView,
+  TILE_SIZES,
+  toggleDown,
+  toggleUp,
+  useExpand,
+  useView,
+  type ColorScheme,
+  type LivingMode,
+  type Spacing,
+  type TileContent,
+  type TileSize,
+  type ViewMode,
+} from './viewSettings';
+
+export { Tile };
 
 const dashed = (s: Status) => s === 'abgeleitet' || s === 'unsicher';
 
 export function TreeView({ focusId }: { focusId?: string }) {
   const doc = useStore((s) => s.doc);
   const v = useView();
+  const ex = useExpand();
   const [onlyBranch, setOnlyBranch] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const built = useMemo(() => buildView(doc, v, focusId, onlyBranch), [doc, v, focusId, onlyBranch]);
+  const [addFor, setAddFor] = useState<string>();
+  const [hiddenOpen, setHiddenOpen] = useState(false);
+  const built = useMemo(() => buildView(doc, v, focusId, onlyBranch, ex), [doc, v, focusId, onlyBranch, ex]);
+  const marks = built.kind === 'layout' ? built.marks : undefined;
+  const hidden = built.kind === 'layout' ? built.hidden ?? [] : [];
   const layout: Layout =
     built.kind === 'layout'
       ? built.layout
@@ -65,10 +90,14 @@ export function TreeView({ focusId }: { focusId?: string }) {
   const viewKey = useRef('');
   useEffect(() => {
     if (!layout.nodes.size && built.kind === 'layout') return;
-    const key = `${focusId ?? ''}|${onlyBranch}|${v.mode}|${v.genUp}|${v.genDown}|${v.showPartners}|${v.living}`;
+    const key = `${focusId ?? ''}|${onlyBranch}|${v.mode}|${v.genUp}|${v.genDown}|${v.showPartners}|${v.living}|${v.size}|${v.spacing}|${v.rootId}`;
     if (viewKey.current === key) return;
     viewKey.current = key;
-    if (built.kind === 'fan' || v.mode !== 'standard') fit();
+    if (v.mode === 'stamm') {
+      if (focusId && layout.nodes.has(focusId)) center(focusId, 0.8);
+      else if (layout.nodes.has('P001')) center('P001', 0.7);
+      else fit();
+    } else if (built.kind === 'fan' || v.mode !== 'standard') fit();
     else if (focusId && layout.nodes.has(focusId)) center(focusId, onlyBranch ? 0.9 : 0.75);
     else if (layout.nodes.has('P001')) center('P001', 0.75);
     else fit();
@@ -87,7 +116,20 @@ export function TreeView({ focusId }: { focusId?: string }) {
             <>
               <Edges layout={layout} />
               {[...layout.nodes.values()].map((n) => (
-                <Tile key={n.id} n={n} focus={n.id === (focusId ?? (v.mode !== 'standard' ? startId : undefined))} anon={built.anon.has(n.id)} onOpen={() => go('person', n.id)} />
+                <Tile
+                  key={n.id}
+                  n={n}
+                  focus={n.id === (focusId ?? (v.mode !== 'standard' && v.mode !== 'stamm' ? startId : undefined))}
+                  anon={built.anon.has(n.id)}
+                  cfg={v.tile}
+                  colors={v.colors}
+                  up={marks?.up.get(n.id)}
+                  down={marks?.down.get(n.id)}
+                  onToggleUp={() => toggleUp(n.id)}
+                  onToggleDown={() => toggleDown(n.id)}
+                  onAdd={n.person.kind === 'platzhalter' || built.anon.has(n.id) ? undefined : () => setAddFor(n.id)}
+                  onOpen={() => go('person', n.id)}
+                />
               ))}
             </>
           )}
@@ -113,11 +155,31 @@ export function TreeView({ focusId }: { focusId?: string }) {
         )}
       </div>
       {v.mode !== 'standard' && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-card/90 px-3 py-1 text-xs text-muted shadow">
-          {built.kind === 'fan' ? `${built.fan.persons} Personen · ${built.fan.slots.filter((s) => !s.person).length} leere Felder` : `${layout.nodes.size} Personen in dieser Ansicht`}
+        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-card/90 px-3 py-1 text-xs text-muted shadow">
+          {built.kind === 'fan' ? `${built.fan.persons} Personen · ${built.fan.slots.filter((s) => !s.person).length} leere Felder` : `${layout.nodes.size} Personen sichtbar`}
+          {v.mode === 'stamm' && hidden.length > 0 && (
+            <button className="underline" onClick={() => setHiddenOpen(true)}>
+              {hidden.length} weitere
+            </button>
+          )}
+          {v.mode === 'stamm' && (ex.up.length > 0 || ex.down.length > 0) && (
+            <button className="underline" onClick={collapseAll}>
+              alles zuklappen
+            </button>
+          )}
+        </div>
+      )}
+      {v.mode === 'stamm' && focusId && built.kind === 'layout' && !layout.nodes.has(focusId) && (
+        <div className="absolute top-14 left-2 right-2 rounded-xl bg-amber-light p-3 text-sm text-amber shadow">
+          Diese Person ist im Stammbaum gerade zugeklappt.{' '}
+          <button className="underline" onClick={() => setView({ mode: 'sanduhr' })}>
+            In der Sanduhr zeigen
+          </button>
         </div>
       )}
       {settingsOpen && <ViewSheet focusId={focusId ?? startId} onClose={() => setSettingsOpen(false)} />}
+      {addFor && <AddRelativeSheet anchorId={addFor} onClose={() => setAddFor(undefined)} />}
+      {hiddenOpen && <HiddenSheet ids={hidden} onClose={() => setHiddenOpen(false)} />}
       <div className="absolute right-3 bottom-3 flex flex-col gap-2">
         <button className="btn-ghost h-12 w-12 px-0 text-xl shadow" onClick={() => zoomBy(1.3)} aria-label="Vergrößern">
           +
@@ -141,7 +203,11 @@ function ViewSheet({ focusId, onClose }: { focusId?: string; onClose: () => void
   const [q, setQ] = useState('');
   const hits = q.length > 1 ? search(doc, q, 8).filter((h) => h.kind === 'person') : [];
   const focus = doc.persons.find((p) => p.id === focusId);
-  const modes: ViewMode[] = ['standard', 'vorfahren', 'nachfahren', 'sanduhr', 'faecher'];
+  const modes: ViewMode[] = ['stamm', 'vorfahren', 'nachfahren', 'sanduhr', 'faecher', 'standard'];
+  const [rq, setRq] = useState('');
+  const rootHits = rq.length > 1 ? search(doc, rq, 8).filter((h) => h.kind === 'person') : [];
+  const root = doc.persons.find((p) => p.id === v.rootId);
+  const rootPartners = root ? doc.partnerships.filter((pa) => pa.p1 === root.id || pa.p2 === root.id).map((pa) => doc.persons.find((p) => p.id === (pa.p1 === root.id ? pa.p2 : pa.p1))).filter(Boolean) : [];
   const gens = [1, 2, 3, 4, 5, 6, 8, 10];
   return (
     <Sheet
@@ -166,7 +232,26 @@ function ViewSheet({ focusId, onClose }: { focusId?: string; onClose: () => void
           </button>
         ))}
       </div>
-      {v.mode !== 'standard' && (
+      {v.mode === 'stamm' && (
+        <div className="mb-4">
+          <span className="label">Stammeltern</span>
+          <p className="mb-2 text-sm">
+            {root ? `${displayName(root)} (${root.id})` : 'keine gewählt'}
+            {rootPartners.length ? ` und ${rootPartners.map((p) => displayName(p!)).join(', ')}` : ''}
+          </p>
+          <input className="field" placeholder="andere Stammeltern suchen" value={rq} onChange={(e) => setRq(e.target.value)} />
+          {rootHits.map((h) => (
+            <button key={h.id} className="btn-ghost mt-1 w-full justify-between" onClick={() => (setRq(''), setView({ rootId: h.id }), collapseAll())}>
+              {h.title} <span className="text-xs text-muted">{h.id}</span>
+            </button>
+          ))}
+          <p className="mt-2 text-xs text-muted">Gezeigt werden die Nachfahren mit ihren Partnern. Weitere Zweige klappst du mit ▲/▼ an den Kacheln auf; mit „+“ legst du eine neue Person mit Beziehung an.</p>
+          <button className="btn-ghost mt-2 w-full" onClick={collapseAll}>
+            Alle Zweige zuklappen
+          </button>
+        </div>
+      )}
+      {v.mode !== 'standard' && v.mode !== 'stamm' && (
         <div className="mb-4">
           <span className="label">Ausgangsperson</span>
           <p className="mb-2 text-sm">{focus ? `${displayName(focus)} (${focus.id})` : 'keine gewählt'}</p>
@@ -216,6 +301,86 @@ function ViewSheet({ focusId, onClose }: { focusId?: string; onClose: () => void
         ))}
       </div>
       <p className="mt-2 text-xs text-muted">Als lebend gilt, wer nicht als verstorben erfasst und nicht nachweislich vor über 110 Jahren geboren ist. Die Einstellungen gelten nur auf diesem Gerät.</p>
+      {v.mode !== 'faecher' && <TileSettings />}
+    </Sheet>
+  );
+}
+
+const TILE_FIELDS: [keyof TileContent, string][] = [
+  ['photo', 'Foto'],
+  ['callName', 'Rufname statt aller Vornamen'],
+  ['birthName', 'Geburtsname (geb. …)'],
+  ['dates', 'Lebensdaten'],
+  ['age', 'Alter'],
+  ['birthPlace', 'Geburtsort'],
+  ['deathPlace', 'Sterbeort'],
+  ['residence', 'Aktueller Wohnort'],
+  ['occupation', 'Beruf'],
+  ['id', 'ID (P001 …)'],
+  ['status', 'Häkchen bei belegten Daten'],
+];
+
+/** Kachelinhalte, Größe, Abstände und Farben – wie beim Vorbild frei wählbar */
+function TileSettings() {
+  const v = useView();
+  return (
+    <details className="mt-5 rounded-xl border border-line p-3" open>
+      <summary className="label mb-0 min-h-9 cursor-pointer">Kacheln</summary>
+      <div className="mt-2 grid grid-cols-1 gap-1 sm:grid-cols-2">
+        {TILE_FIELDS.map(([k, label]) => (
+          <label key={k} className="flex min-h-10 items-center gap-2 text-sm">
+            <input type="checkbox" className="h-5 w-5" checked={v.tile[k]} onChange={(e) => setTile({ [k]: e.target.checked })} /> {label}
+          </label>
+        ))}
+      </div>
+      <span className="label mt-3">Größe</span>
+      <div className="grid grid-cols-3 gap-2">
+        {(Object.keys(TILE_SIZES) as TileSize[]).map((s) => (
+          <button key={s} className={v.size === s ? 'btn-primary px-2' : 'btn-ghost px-2'} onClick={() => setView({ size: s })}>
+            {TILE_SIZES[s].label}
+          </button>
+        ))}
+      </div>
+      <span className="label mt-3">Abstände</span>
+      <div className="grid grid-cols-3 gap-2">
+        {(['eng', 'standard', 'weit'] as Spacing[]).map((s) => (
+          <button key={s} className={v.spacing === s ? 'btn-primary px-2' : 'btn-ghost px-2'} onClick={() => setView({ spacing: s })}>
+            {{ eng: 'Eng', standard: 'Standard', weit: 'Weit' }[s]}
+          </button>
+        ))}
+      </div>
+      <span className="label mt-3">Farben</span>
+      <div className="grid grid-cols-3 gap-2">
+        {(['geschlecht', 'dezent', 'neutral'] as ColorScheme[]).map((c) => (
+          <button key={c} className={v.colors === c ? 'btn-primary px-2' : 'btn-ghost px-2'} onClick={() => setView({ colors: c })}>
+            {{ geschlecht: 'Geschlecht', dezent: 'Dezent', neutral: 'Neutral' }[c]}
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 text-xs text-muted">Passt nicht alles in die Kachel, werden die unteren Zeilen weggelassen – „Groß“ zeigt am meisten.</p>
+    </details>
+  );
+}
+
+/** Personen, die im Stammbaum gerade nicht sichtbar sind */
+function HiddenSheet({ ids, onClose }: { ids: string[]; onClose: () => void }) {
+  const doc = useStore((s) => s.doc);
+  const list = ids.map((id) => doc.persons.find((p) => p.id === id)).filter((p) => p && p.kind !== 'platzhalter');
+  return (
+    <Sheet title={`${list.length} Personen außerhalb dieser Ansicht`} onClose={onClose}>
+      <p className="mb-3 text-sm text-muted">Sie gehören zu zugeklappten Zweigen oder haben (noch) keine Verbindung zu den Stammeltern. Über eine sichtbare Person mit ▲/▼ aufklappen, oder hier eine Person in der Sanduhr ansehen.</p>
+      <ul className="card divide-y divide-line">
+        {list.map((p) => (
+          <li key={p!.id} className="flex items-center gap-2 px-3">
+            <button className="min-h-12 flex-1 text-left" onClick={() => (onClose(), go('person', p!.id))}>
+              {displayName(p!)} <span className="text-xs text-muted">{p!.id}</span>
+            </button>
+            <button className="chip min-h-9 border border-line" onClick={() => (onClose(), setView({ mode: 'sanduhr' }), go('baum', p!.id))}>
+              Sanduhr
+            </button>
+          </li>
+        ))}
+      </ul>
     </Sheet>
   );
 }
@@ -235,7 +400,7 @@ function Legend() {
           Familienangabe / belegt
           <br />
           <svg width="40" height="10" className="mr-2 inline">
-            <line x1="0" y1="5" x2="40" y2="5" stroke="#b0731e" strokeWidth="2" strokeDasharray="6 4" />
+            <line x1="0" y1="5" x2="40" y2="5" stroke="#b0731e" strokeWidth="2" strokeDasharray="2 4" />
           </svg>
           abgeleitet oder unsicher
           <br />
@@ -273,7 +438,7 @@ export function Edges({ layout }: { layout: Layout }) {
     const y = midY(l);
     const div = pa.state === 'geschieden' || pa.state === 'getrennt';
     const stroke = div ? '#a3432b' : dashed(pa.status) ? '#b0731e' : '#4b5a4f';
-    const dash = div ? '3 3' : dashed(pa.status) ? '6 4' : undefined;
+    const dash = div ? '3 3' : dashed(pa.status) ? '2 4' : undefined;
     if (sameRow && x2 - x1 < 200) {
       out.push(<line key={`pa${pa.id}`} x1={x1} y1={y} x2={x2} y2={y} stroke={stroke} strokeWidth={2} strokeDasharray={dash} />);
       if (pa.state === 'verheiratet') {
@@ -332,11 +497,11 @@ export function Edges({ layout }: { layout: Layout }) {
     const busY = Math.max(oy + 10, topKid - 16 - (lane % 5) * 9);
     const xs = kids.map((k) => k.n.x + TILE_W / 2);
     const allDashed = kids.every((k) => k.c.pc.every((x) => dashed(x.status)));
-    out.push(<line key={`v${f.key}`} x1={ox} y1={oy} x2={ox} y2={busY} stroke={allDashed ? '#b0731e' : '#4b5a4f'} strokeWidth={1.5} strokeDasharray={allDashed ? '6 4' : undefined} />);
-    out.push(<line key={`h${f.key}`} x1={Math.min(ox, ...xs)} y1={busY} x2={Math.max(ox, ...xs)} y2={busY} stroke={allDashed ? '#b0731e' : '#4b5a4f'} strokeWidth={1.5} strokeDasharray={allDashed ? '6 4' : undefined} />);
+    out.push(<line key={`v${f.key}`} x1={ox} y1={oy} x2={ox} y2={busY} stroke={allDashed ? '#b0731e' : '#4b5a4f'} strokeWidth={1.5} strokeDasharray={allDashed ? '2 4' : undefined} />);
+    out.push(<line key={`h${f.key}`} x1={Math.min(ox, ...xs)} y1={busY} x2={Math.max(ox, ...xs)} y2={busY} stroke={allDashed ? '#b0731e' : '#4b5a4f'} strokeWidth={1.5} strokeDasharray={allDashed ? '2 4' : undefined} />);
     for (const k of kids) {
       const d = k.c.pc.some((x) => dashed(x.status));
-      out.push(<line key={`c${f.key}${k.c.id}`} x1={k.n.x + TILE_W / 2} y1={busY} x2={k.n.x + TILE_W / 2} y2={k.n.y} stroke={d ? '#b0731e' : '#4b5a4f'} strokeWidth={1.5} strokeDasharray={d ? '6 4' : undefined} />);
+      out.push(<line key={`c${f.key}${k.c.id}`} x1={k.n.x + TILE_W / 2} y1={busY} x2={k.n.x + TILE_W / 2} y2={k.n.y} stroke={d ? '#b0731e' : '#4b5a4f'} strokeWidth={1.5} strokeDasharray={d ? '2 4' : undefined} />);
     }
   }
 
@@ -367,70 +532,3 @@ function shortLabel(l: string) {
   return s.length > 28 ? s.slice(0, 26) + '…' : s;
 }
 
-export function Tile({ n, focus, onOpen, anon = false }: { n: LNode; focus: boolean; onOpen: () => void; anon?: boolean }) {
-  const p = n.person;
-  const placeholder = p.kind !== 'benannt';
-  const fill = p.sex === 'm' ? 'var(--color-male)' : p.sex === 'w' ? 'var(--color-female)' : 'var(--color-neutral)';
-  const line = p.sex === 'm' ? 'var(--color-male-line)' : p.sex === 'w' ? 'var(--color-female-line)' : '#b8b3a6';
-  const b = birthDate(p);
-  const d = deathDate(p);
-  const dead = isDeceased(p);
-  const by = shortYear(b);
-  const dy = shortYear(d);
-  const birthUnsure = eventOf(p, 'geburt')?.status === 'unsicher';
-  const deathUnsure = eventOf(p, 'tod')?.status === 'unsicher';
-  const q = (s: string, unsure: boolean) => (unsure && !s.endsWith('?') ? `${s}?` : s);
-  const years = anon ? '' : [by && `*${q(by, birthUnsure)}`, dead ? `†${dy ? q(dy, deathUnsure) : '?'}` : ''].filter(Boolean).join('  ');
-  const nm = anon ? 'Lebende Person' : shortName(p);
-  const lines = wrap(nm, 20);
-  return (
-    <g transform={`translate(${n.x},${n.y})`} onClick={onOpen} style={{ cursor: 'pointer' }} role="button" aria-label={nm}>
-      <rect width={TILE_W} height={TILE_H} rx={12} fill={placeholder ? '#f6f3ec' : fill} stroke={focus ? '#2f4a3a' : line} strokeWidth={focus ? 3 : 1.3} strokeDasharray={placeholder ? '5 4' : undefined} />
-      {p.kind === 'platzhalter' ? (
-        <text x={TILE_W / 2} y={TILE_H / 2 + 4} textAnchor="middle" fontSize={11} fill="#6b6a5f" fontStyle="italic">
-          {wrap(nm, 24).slice(0, 3).map((l, i, arr) => (
-            <tspan key={i} x={TILE_W / 2} dy={i === 0 ? -(arr.length - 1) * 6.5 : 13}>
-              {l}
-            </tspan>
-          ))}
-        </text>
-      ) : (
-        <>
-          <text x={10} y={20} fontSize={13} fontWeight={600} fill="#23271f" fontStyle={placeholder ? 'italic' : undefined}>
-            {lines.slice(0, 2).map((l, i) => (
-              <tspan key={i} x={10} dy={i === 0 ? 0 : 15}>
-                {l}
-              </tspan>
-            ))}
-          </text>
-          <text x={10} y={TILE_H - 10} fontSize={11} fill="#4b5a4f">
-            {years}
-          </text>
-          <text x={TILE_W - 8} y={TILE_H - 10} fontSize={9} fill="#8a8778" textAnchor="end">
-            {p.id}
-          </text>
-        </>
-      )}
-      {n.loose && (
-        <text x={TILE_W - 8} y={14} fontSize={9} fill="#a3432b" textAnchor="end">
-          ohne Anschluss
-        </text>
-      )}
-    </g>
-  );
-}
-
-function wrap(s: string, max: number): string[] {
-  const words = s.split(/\s+/);
-  const lines: string[] = [];
-  let cur = '';
-  for (const w of words) {
-    if ((cur + ' ' + w).trim().length > max && cur) {
-      lines.push(cur);
-      cur = w;
-    } else cur = (cur + ' ' + w).trim();
-  }
-  if (cur) lines.push(cur);
-  if (lines.length > 2) lines[1] = lines.slice(1).join(' ').slice(0, max - 1) + '…';
-  return lines;
-}
